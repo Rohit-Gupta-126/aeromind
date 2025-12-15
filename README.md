@@ -98,11 +98,20 @@ aeromind/
 
 ### Prerequisites
 *   Python 3.10+
+*   Node.js 18+ & pnpm (for Frontend)
 *   Google Gemini API Key (in `.env` as `GEMINI_API_KEY`)
 
 ### Installation
+
+**Backend:**
 ```bash
 pip install -r requirements.txt
+```
+
+**Frontend:**
+```bash
+cd aeromind-ui
+pnpm install
 ```
 
 ### Ingestion
@@ -110,13 +119,24 @@ Place PDF documents in `data/documents/` and run:
 ```bash
 python scripts/ingest.py
 ```
+*Alternatively, use the Web UI to upload documents.*
 
-### Running the Server
+### Running the System
+
+**Backend:**
 ```bash
 uvicorn app.main:app --reload
 ```
 
-### API Endpoint
+**Frontend:**
+```bash
+cd aeromind-ui
+pnpm dev
+```
+Access the UI at: `http://localhost:3000`
+
+### API Endpoints
+
 **POST** `/ask`
 ```json
 {
@@ -124,20 +144,14 @@ uvicorn app.main:app --reload
 }
 ```
 
-**Response:**
-```json
-{
-  "question": "What causes jet engine vibration?",
-  "route_selected": "engineering",
-  "answer": "### Summary\nJet engine vibration is primarily caused by...",
-  "confidence": "HIGH (verified)",
-  "sources": ["data/documents/jet_engine_basics.pdf"]
-}
-```
+**POST** `/upload`
+*   Multipart form data: `file` (PDF)
+*   Uploads and immediately re-indexes the knowledge base.
 
 ---
 
 ## 5. Key Features
+*   **Web Interface:** Modern Next.js UI for querying and document upload.
 *   **Strict RAG:** Uses FAISS for vector search and HuggingFace embeddings.
 *   **Self-Correction:** The Verifier Agent downgrades confidence if the answer isn't fully supported by the text.
 *   **Structured Output:** Engineering answers are formatted with Summary, Key Findings, Risks, and Assumptions.
