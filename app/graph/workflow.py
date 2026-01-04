@@ -28,8 +28,8 @@ def run_workflow(question: str) -> dict:
 
     state = route_query(state)
     
-    # Run verifier if we have an answer and it's an engineering query
-    if state["route"] == "engineering" and state["answer"]:
+    # Run verifier if we have an answer and it's an engineering or safety query
+    if state["route"] in ["engineering", "safety"] and state["answer"]:
         state = verifier_agent(state)
         
         # Adjust confidence based on verification

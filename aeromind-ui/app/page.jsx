@@ -174,11 +174,11 @@ export default function Home() {
                 <div className="flex items-center gap-3">
                   {response.confidence && (
                     <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                      response.confidence.toLowerCase() === 'high' 
+                      response.confidence.toLowerCase().includes('high') 
                         ? 'bg-green-900/30 text-green-400 border-green-800' 
                         : 'bg-yellow-900/30 text-yellow-400 border-yellow-800'
                     }`}>
-                      {response.confidence} Confidence
+                      {response.confidence}
                     </span>
                   )}
                   <span className="text-xs text-gray-500 font-mono">
@@ -194,7 +194,7 @@ export default function Home() {
               {response.verification_status && (
                  <div className="px-6 py-3 bg-gray-900/50 border-t border-gray-700 text-sm">
                     <span className="text-gray-500">Verification: </span>
-                    <span className={response.verification_status === 'Verified' ? 'text-green-400' : 'text-yellow-400'}>
+                    <span className={response.verification_status === 'PASS' ? 'text-green-400' : 'text-yellow-400'}>
                       {response.verification_status}
                     </span>
                     {response.verification_notes && (

@@ -98,6 +98,71 @@ aeromind/
 
 ### Prerequisites
 *   Python 3.10+
+*   Google Gemini API Key
+
+### Installation
+1.  **Clone the repository:**
+    ```bash
+    git clone <repo-url>
+    cd aeromind
+    ```
+
+2.  **Set up Virtual Environment:**
+    ```bash
+    python -m venv venv
+    .\venv\Scripts\activate  # Windows
+    source venv/bin/activate # Linux/Mac
+    ```
+
+3.  **Install Dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **Environment Variables:**
+    Create a `.env` file in the root:
+    ```env
+    GEMINI_API_KEY=your_api_key_here
+    ```
+
+### Running the System
+1.  **Ingest Documents:**
+    Place your PDFs in `data/documents/` and run:
+    ```bash
+    python scripts/ingest.py
+    ```
+
+2.  **Start the Backend:**
+    ```bash
+    python run.py
+    ```
+
+3.  **Start the Frontend:**
+    ```bash
+    cd aeromind-ui
+    pnpm install
+    pnpm dev
+    ```
+
+---
+
+## 5. Key Features & Problem Solved
+
+### The Problem
+Engineering teams often struggle with "information overload" in technical documentation. Traditional search returns documents, but not answers. Standard LLMs often hallucinate technical details, which is unacceptable in aerospace.
+
+### The Solution
+AeroMind solves this by providing a **Verified Answer Engine**:
+*   **Zero Hallucination Policy:** Uses a dedicated `Verifier Agent` to double-check every claim against the source text.
+*   **Multi-Model Fallback:** Automatically switches between Gemini models (`2.5-flash`, `2.0-flash`, `1.5-pro`) if API quotas are hit.
+*   **Structured Intelligence:** Returns data in engineering-friendly formats (Key Findings, Risks, Mitigations, Regulations).
+*   **Dynamic Knowledge Base:** Supports real-time PDF uploads and re-indexing via the UI.
+*   **Domain Specialization:** Separate logic paths for technical engineering vs. safety/regulatory compliance.
+
+---
+
+## 6. License
+MIT License. See `LICENSE` for details.
 *   Node.js 18+ & pnpm (for Frontend)
 *   Google Gemini API Key (in `.env` as `GEMINI_API_KEY`)
 

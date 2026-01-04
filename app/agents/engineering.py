@@ -26,9 +26,8 @@ def engineering_agent(state: WorkflowState) -> WorkflowState:
         state["sources"] = []
         return state
 
+    system_instruction = "You are an aerospace engineering assistant."
     prompt = f"""
-You are an aerospace engineering assistant.
-
 Use ONLY the information below to answer the question.
 If the answer is not in the context, say "Information not found in documents."
 
@@ -43,11 +42,9 @@ Format your response as a JSON object with the following keys:
 - "key_findings": A list of key technical points.
 - "risks": Any risks or safety considerations mentioned.
 - "assumptions": Any assumptions made based on the context.
-
-Ensure the JSON is valid.
 """
 
-    response = generate_response(prompt)
+    response = generate_response(prompt, json_mode=True, system_instruction=system_instruction)
     
     # Clean up response if it contains markdown code blocks
     if "```json" in response:

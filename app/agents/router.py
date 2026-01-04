@@ -14,8 +14,8 @@ def route_query(state: WorkflowState) -> WorkflowState:
     """
     question = state["question"]
     
+    system_instruction = "You are a query router for an aerospace engineering system."
     prompt = f"""
-You are a query router for an aerospace engineering system.
 Classify the following question into one of these categories:
 - engineering: Technical questions about engines, design, physics, or mechanics.
 - safety: Questions about safety protocols, regulations, or risk assessment.
@@ -26,7 +26,7 @@ Question: {question}
 Output ONLY the category name.
 """
     try:
-        route = generate_response(prompt).strip().lower()
+        route = generate_response(prompt, system_instruction=system_instruction).strip().lower()
     except Exception as e:
         logger.error(f"Router LLM failed: {e}")
         route = "unsupported"

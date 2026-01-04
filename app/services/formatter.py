@@ -17,7 +17,13 @@ def format_response(answer: str) -> str:
         markdown_output = ""
         
         if "summary" in data:
-            markdown_output += f"### Summary\n{data['summary']}\n\n"
+            markdown_output += "### Summary\n"
+            if isinstance(data["summary"], list):
+                for item in data["summary"]:
+                    markdown_output += f"{item} "
+                markdown_output += "\n\n"
+            else:
+                markdown_output += f"{data['summary']}\n\n"
             
         if "key_findings" in data and isinstance(data["key_findings"], list):
             markdown_output += "### Key Findings\n"
@@ -26,10 +32,48 @@ def format_response(answer: str) -> str:
             markdown_output += "\n"
             
         if "risks" in data:
-            markdown_output += f"### Risks & Considerations\n{data['risks']}\n\n"
-            
+            markdown_output += "### Risks & Considerations\n"
+            if isinstance(data["risks"], list):
+                for item in data["risks"]:
+                    markdown_output += f"- {item}\n"
+            else:
+                markdown_output += f"{data['risks']}\n"
+            markdown_output += "\n"
         if "assumptions" in data:
-            markdown_output += f"### Assumptions\n{data['assumptions']}\n\n"
+            markdown_output += "### Assumptions\n"
+            if isinstance(data["assumptions"], list):
+                for item in data["assumptions"]:
+                    markdown_output += f"- {item}\n"
+            else:
+                markdown_output += f"{data['assumptions']}\n"
+            markdown_output += "\n"
+
+        if "regulations" in data:
+            markdown_output += "### Regulations & Standards\n"
+            if isinstance(data["regulations"], list):
+                for item in data["regulations"]:
+                    markdown_output += f"- {item}\n"
+            else:
+                markdown_output += f"{data['regulations']}\n"
+            markdown_output += "\n"
+
+        if "hazards" in data:
+            markdown_output += "### Identified Hazards\n"
+            if isinstance(data["hazards"], list):
+                for item in data["hazards"]:
+                    markdown_output += f"- {item}\n"
+            else:
+                markdown_output += f"{data['hazards']}\n"
+            markdown_output += "\n"
+
+        if "mitigations" in data:
+            markdown_output += "### Recommended Mitigations\n"
+            if isinstance(data["mitigations"], list):
+                for item in data["mitigations"]:
+                    markdown_output += f"- {item}\n"
+            else:
+                markdown_output += f"{data['mitigations']}\n"
+            markdown_output += "\n"
             
         return markdown_output.strip()
         
