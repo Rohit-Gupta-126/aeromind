@@ -5,15 +5,30 @@ AeroMind is a modular, explainable, document-grounded GenAI system designed to a
 
 ---
 
-## 1. Core Philosophy
-*   **Read Before Speak:** Answers are strictly grounded in retrieved document context (RAG).
-*   **Explainability:** Every response includes a confidence level and source citations.
-*   **Safety First:** The system explicitly states uncertainty and refuses to speculate.
-*   **Multi-Agent Architecture:** Specialized agents handle routing, retrieval, generation, and verification.
+## 🚀 Key Features
+
+*   **Zero Hallucination Policy:** A dedicated `Verifier Agent` cross-checks every generated claim against the source text to ensure factual accuracy.
+*   **Multi-Agent Workflow:** Specialized agents manage the pipeline:
+    *   **Router:** Classifies queries into Engineering, Safety, or Unsupported categories.
+    *   **Domain Agents:** Specialize in technical RAG and safety protocol compliance.
+    *   **Verifier:** Validates answers against retrieved chunks, providing a `PASS/PARTIAL/FAIL` status.
+*   **Explainable RAG:** Every response includes confidence levels, source citations, and verification notes.
+*   **Dynamic Knowledge Base:** Supports real-time PDF uploads and automated re-indexing via the UI.
+*   **Structured Intelligence:** Outputs are formatted for engineers, highlighting findings, risks, and assumptions.
 
 ---
 
-## 2. Architecture & Data Flow
+## 🛠️ Tech Stack
+
+- **Backend:** Python 3.10+, FastAPI, LangChain/LangGraph (concept)
+- **AI Models:** Google Gemini (2.0-flash, 1.5-pro, etc.)
+- **Vector Store:** FAISS (Facebook AI Similarity Search)
+- **Embeddings:** HuggingFace `all-MiniLM-L6-v2`
+- **Frontend:** Next.js, React, Tailwind CSS, pnpm
+
+---
+
+## 📐 Architecture & Data Flow
 
 ```ascii
                                     +-----------------+
@@ -62,16 +77,19 @@ AeroMind is a modular, explainable, document-grounded GenAI system designed to a
     Final Response
 ```
 
-### Execution Steps
-1.  **Request:** Client sends a question to `/ask`.
-2.  **Routing:** `Router Agent` classifies the query (Engineering, Safety, or Unsupported) using an LLM.
-3.  **Retrieval & Generation:** The selected agent retrieves relevant chunks from the FAISS vector DB and generates a structured JSON answer.
-4.  **Verification:** The `Verifier Agent` cross-checks the answer against the source text to detect hallucinations.
-5.  **Formatting:** The internal JSON is converted into a clean Markdown report.
+### Execution Pipeline
+1.  **Request:** User asks a question via the `/ask` endpoint.
+2.  **Routing:** The `Router Agent` uses an LLM to determine the appropriate domain.
+3.  **RAG Execution:** The selected agent searches the FAISS index for relevant document chunks and generates a structured JSON response.
+4.  **Verification:** The `Verifier Agent` compares the generated answer with the retrieved context. It assigns a status:
+    - `PASS`: Every claim is supported by the context.
+    - `PARTIAL`: Some claims are unsupported or speculative.
+    - `FAIL`: Significant hallucinations detected.
+5.  **Formatting:** The Response Formatter converts internal structured data into a detailed Markdown report.
 
 ---
 
-## 3. Project Structure
+## 📂 Project Structure
 
 ```text
 aeromind/
@@ -89,139 +107,78 @@ aeromind/
 ├── scripts/
 │   └── ingest.py        # Document ingestion script
 ├── tests/               # Integration tests
-└── requirements.txt
+└── run.py               # Main entry point to start backend
 ```
 
 ---
 
-## 4. Setup & Usage
+## 🔧 Setup & Installation
 
 ### Prerequisites
 *   Python 3.10+
+*   Node.js 18+ & pnpm
 *   Google Gemini API Key
 
-### Installation
-1.  **Clone the repository:**
-    ```bash
-    git clone <repo-url>
-    cd aeromind
-    ```
-
-2.  **Set up Virtual Environment:**
-    ```bash
-    python -m venv venv
-    .\venv\Scripts\activate  # Windows
-    source venv/bin/activate # Linux/Mac
-    ```
-
-3.  **Install Dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-4.  **Environment Variables:**
-    Create a `.env` file in the root:
-    ```env
-    GEMINI_API_KEY=your_api_key_here
-    ```
-
-### Running the System
-1.  **Ingest Documents:**
-    Place your PDFs in `data/documents/` and run:
-    ```bash
-    python scripts/ingest.py
-    ```
-
-2.  **Start the Backend:**
-    ```bash
-    python run.py
-    ```
-
-3.  **Start the Frontend:**
-    ```bash
-    cd aeromind-ui
-    pnpm install
-    pnpm dev
-    ```
-
----
-
-## 5. Key Features & Problem Solved
-
-### The Problem
-Engineering teams often struggle with "information overload" in technical documentation. Traditional search returns documents, but not answers. Standard LLMs often hallucinate technical details, which is unacceptable in aerospace.
-
-### The Solution
-AeroMind solves this by providing a **Verified Answer Engine**:
-*   **Zero Hallucination Policy:** Uses a dedicated `Verifier Agent` to double-check every claim against the source text.
-*   **Multi-Model Fallback:** Automatically switches between Gemini models (`2.5-flash`, `2.0-flash`, `1.5-pro`) if API quotas are hit.
-*   **Structured Intelligence:** Returns data in engineering-friendly formats (Key Findings, Risks, Mitigations, Regulations).
-*   **Dynamic Knowledge Base:** Supports real-time PDF uploads and re-indexing via the UI.
-*   **Domain Specialization:** Separate logic paths for technical engineering vs. safety/regulatory compliance.
-
----
-
-## 6. License
-MIT License. See `LICENSE` for details.
-*   Node.js 18+ & pnpm (for Frontend)
-*   Google Gemini API Key (in `.env` as `GEMINI_API_KEY`)
-
-### Installation
-
-**Backend:**
+### 1. Clone & Environment
 ```bash
+git clone <repo-url>
+cd aeromind
+python -m venv venv
+.\venv\Scripts\activate  # Windows
+source venv/bin/activate # Linux/Mac
 pip install -r requirements.txt
 ```
 
-**Frontend:**
-```bash
-cd aeromind-ui
-pnpm install
+### 2. Configuration
+Create a `.env` file in the root directory:
+```env
+GEMINI_API_KEY=your_api_key_here
 ```
 
-### Ingestion
-Place PDF documents in `data/documents/` and run:
+### 3. Ingestion
+Add your PDFs to [data/documents/](data/documents/) and run:
 ```bash
 python scripts/ingest.py
 ```
-*Alternatively, use the Web UI to upload documents.*
-
-### Running the System
-
-**Backend:**
-```bash
-uvicorn app.main:app --reload
-```
-
-**Frontend:**
-```bash
-cd aeromind-ui
-pnpm dev
-```
-Access the UI at: `http://localhost:3000`
-
-### API Endpoints
-
-**POST** `/ask`
-```json
-{
-  "question": "What causes jet engine vibration?"
-}
-```
-
-**POST** `/upload`
-*   Multipart form data: `file` (PDF)
-*   Uploads and immediately re-indexes the knowledge base.
 
 ---
 
-## 5. Key Features
-*   **Web Interface:** Modern Next.js UI for querying and document upload.
-*   **Strict RAG:** Uses FAISS for vector search and HuggingFace embeddings.
-*   **Self-Correction:** The Verifier Agent downgrades confidence if the answer isn't fully supported by the text.
-*   **Structured Output:** Engineering answers are formatted with Summary, Key Findings, Risks, and Assumptions.
-*   **Extensible:** New agents (e.g., Compliance, Maintenance) can be added by updating the Router.
+## 🚦 Running the System
+
+### Backend
+```bash
+python run.py
+```
+*API will be available at `http://localhost:8000`*
+
+### Frontend
+```bash
+cd aeromind-ui
+pnpm install
+pnpm dev
+```
+*Access the UI at `http://localhost:3000`*
+
+---
+
+## 📡 API Documentation
+
+### `POST /ask`
+Submit a question to the multi-agent system.
+*   **Request Body:** `{"question": "string"}`
+*   **Response:** Includes answer, confidence, sources, and verification status.
+
+### `POST /upload`
+Upload a PDF for immediate ingestion.
+*   **Body:** Multipart form data (`file`)
+*   **Effect:** Saves file to `data/documents/` and triggers re-indexing.
+
+---
+
+## 📄 License
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
 **AeroMind is not a chatbot.** It is a controlled, explainable engineering tool.
+
