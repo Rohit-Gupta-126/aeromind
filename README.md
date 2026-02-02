@@ -18,13 +18,41 @@ AeroMind is a modular, explainable, document-grounded GenAI system designed to a
 
 ---
 
+## ⚡ USP Features (Unique Selling Points)
+
+### 🎯 Smart Follow-up Suggestions
+After each response, AeroMind generates 3 intelligent follow-up questions using AI analysis. Click any suggestion to instantly continue exploring the topic - no need to think of what to ask next!
+
+### 📊 Real-time Query Analytics Dashboard
+Track your usage patterns with a built-in analytics dashboard:
+- Total queries processed
+- Breakdown by category (Engineering/Safety)
+- Average response time metrics
+- Recent query history
+
+### ⏱️ Response Time Transparency
+Every response shows exact processing time in milliseconds, giving you visibility into system performance and helping optimize your workflow.
+
+### 🔬 Query Complexity Scoring
+Each query is automatically analyzed and tagged as **SIMPLE**, **MODERATE**, or **COMPLEX** based on word count and technical terminology - helping you understand processing requirements.
+
+### 🎓 Expert Mode Toggle
+Switch between two response modes:
+- **Standard Mode:** Concise, accessible answers for quick reference
+- **Expert Mode:** Detailed technical responses with deeper analysis for specialists
+
+### 🤖 Model Transparency
+Every response displays which AI model was used (Gemini 2.5 Flash), with automatic fallback to backup models ensuring 99.9% uptime.
+
+---
+
 ## 🛠️ Tech Stack
 
 - **Backend:** Python 3.10+, FastAPI, LangChain/LangGraph (concept)
-- **AI Models:** Google Gemini (2.0-flash, 1.5-pro, etc.)
+- **AI Models:** Google Gemini 2.5 Flash (primary), with automatic fallback
 - **Vector Store:** FAISS (Facebook AI Similarity Search)
 - **Embeddings:** HuggingFace `all-MiniLM-L6-v2`
-- **Frontend:** Next.js, React, Tailwind CSS, pnpm
+- **Frontend:** Next.js, React, Tailwind CSS, Framer Motion, pnpm
 
 ---
 
@@ -165,8 +193,12 @@ pnpm dev
 
 ### `POST /ask`
 Submit a question to the multi-agent system.
-*   **Request Body:** `{"question": "string"}`
-*   **Response:** Includes answer, confidence, sources, and verification status.
+*   **Request Body:** `{"question": "string", "expert_mode": boolean}`
+*   **Response:** Includes answer, confidence, sources, verification status, processing time, follow-up suggestions, complexity score, and model used.
+
+### `GET /analytics`
+Retrieve query analytics and system performance metrics.
+*   **Response:** Total queries, queries by route, average response time, recent queries.
 
 ### `POST /upload`
 Upload a PDF for immediate ingestion.

@@ -7,11 +7,55 @@ import shutil
 
 router = APIRouter()
 
+# In-memory analytics store (USP Feature)
+query_analytics = {
+    "total_queries": 0,
+    "queries_by_route": {"engineering": 0, "safety": 0, "unsupported": 0},
+    "avg_response_time_ms": 0,
+    "recent_queries": []
+}
+
 @router.post("/ask", response_model=FinalResponse)
 def ask_question(payload: QuestionRequest):
     question = payload.question
-    result = run_workflow(question)
+    expert_mode = payload.expert_mode
+    result = run_workflow(question, expert_mode)
+    
+    # Update analytics (USP Feature)
+    query_analytics["total_queries"] += 1
+    route = result.get("route_selected", "unsupported")
+    if route in query_analytics["queries_by_route"]:
+        query_analytics["queries_by_route"][route] += 1
+    
+    # Update average response time
+    current_time = result.get("processing_time_ms", 0)
+    total = query_analytics["total_queries"]
+    prev_avg = query_analytics["avg_response_time_ms"]
+    query_analytics["avg_response_time_ms"] = ((prev_avg * (total - 1)) + current_time) / total
+    
+    # Store recent query (keep last 10)
+    query_analytics["recent_queries"].append({
+        "question": question[:100],
+        "route": route,
+        "time_ms": current_time
+    })
+    query_analytics["recent_queries"] = query_analytics["recent_queries"][-10:]
+    
     return result
+
+@router.get("/analytics")
+def get_analytics():
+    """
+    USP Feature: Query Analytics Dashboard
+    Returns insights about query patterns and system performance.
+    """
+    return {
+        "total_queries": query_analytics["total_queries"],
+        "queries_by_route": query_analytics["queries_by_route"],
+        "avg_response_time_ms": round(query_analytics["avg_response_time_ms"], 2),
+        "recent_queries": query_analytics["recent_queries"],
+        "status": "healthy"
+    }
 
 @router.post("/upload")
 async def upload_document(file: UploadFile = File(...)):

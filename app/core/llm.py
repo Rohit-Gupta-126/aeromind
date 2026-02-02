@@ -12,9 +12,12 @@ logger = logging.getLogger(__name__)
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-# List of models to try in order of preference for fallback
+# Primary model - Gemini 2.5 Flash (fastest and most efficient)
+PRIMARY_MODEL = "gemini-2.5-flash"
+
+# Fallback models in order of preference
 MODEL_PRIORITY = [
-    "gemini-2.0-flash-exp", # Updated to a likely valid preview or keep user's if they insist, but 2.5 is likely a typo/future. I'll keep user's 2.5 as primary if it works, but add real ones.
+    "gemini-2.0-flash",
     "gemini-1.5-flash",
     "gemini-1.5-pro"
 ]
@@ -51,8 +54,8 @@ def generate_response(prompt: str, json_mode: bool = False, system_instruction: 
 
     last_exception = None
 
-    # Try the user's original model first, then fallbacks
-    models_to_try = ["gemini-2.5-flash"] + MODEL_PRIORITY
+    # Try primary model first, then fallbacks
+    models_to_try = [PRIMARY_MODEL] + MODEL_PRIORITY
 
     for model_name in models_to_try:
         try:
